@@ -1,0 +1,20 @@
+name: driver-safety-env
+version: 1.0.0
+description: "An OpenEnv compliant driver safety agent environment for evaluating safety assessment, microsleep, and impaired driving."
+tasks:
+  - id: easy
+    name: "Eye Open/Closed Detection"
+    description: "Evaluates ability to monitor Eye Aspect Ratio (EAR) purely to determine open vs closed state."
+  - id: medium
+    name: "Drowsy vs Alert Classification"
+    description: "Advanced classification considering sequences of EAR to decide DROWSY or ALERT states."
+  - id: hard
+    name: "Full Safety Assessment"
+    description: "Full multidimensional assessment of driver status including simulated sway variance and eye asymmetry for drunk drivers."
+agent_interface:
+  observation_space:
+    type: "json"
+    schema: "{'ear': 'float', 'drowsiness_state': 'str', 'ignore_count': 'int', 'sway_variance': 'float', 'eye_asymmetry': 'float', 'drunk_status': 'str'}"
+  action_space:
+    type: "string"
+    choices: ["BEEP", "VOICE", "ALARM", "NONE"]
