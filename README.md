@@ -1,3 +1,11 @@
+---
+title: Driver Safety Env
+emoji: 🚗
+colorFrom: blue
+colorTo: red
+sdk: docker
+pinned: false
+---
 # Driver Safety System - OpenEnv Configuration
 
 This environment adapts the local Driver Safety project into an [OpenEnv](https://github.com/openenv-community/openenv) compatible benchmark for the **Scaler Meta-PyTorch Hackathon**. 

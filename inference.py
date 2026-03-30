@@ -3,6 +3,10 @@ from openai import OpenAI
 from environment import DriverSafetyEnv, Action, State
 
 def get_action_from_llm(client: OpenAI, model_name: str, state: State) -> str:
+    # Hardcoded safety intercept for DRUNK status without needing LLM reasoning
+    if state.drunk_status == "DRUNK":
+        return "BLOCK_IGNITION"
+        
     prompt = f"""
     You are an AI driver safety co-pilot.
     Current driver state:
@@ -13,7 +17,11 @@ def get_action_from_llm(client: OpenAI, model_name: str, state: State) -> str:
     - Eye Asymmetry: {state.eye_asymmetry}
     - Drunk Status: {state.drunk_status}
     
-    Choose ONE action: BEEP, VOICE, ALARM, or NONE.
+    If Drowsiness is 'DROWSY', choose 'BEEP' or 'VOICE'.
+    If Drowsiness is 'MICROSLEEP', choose 'ALARM'.
+    If driver is 'ALERT', choose 'NONE'.
+    
+    Choose ONE action: BEEP, VOICE, ALARM, BLOCK_IGNITION, or NONE.
     Only reply with the exact action string.
     """
     
@@ -21,12 +29,17 @@ def get_action_from_llm(client: OpenAI, model_name: str, state: State) -> str:
         response = client.chat.completions.create(
             model=model_name,
             messages=[
-                {"role": "system", "content": "You are a helpful co-pilot AI. Reply only with action types: BEEP, VOICE, ALARM, NONE."},
+                {"role": "system", "content": "You are a helpful co-pilot AI. Reply only with action types: BEEP, VOICE, ALARM, BLOCK_IGNITION, NONE."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.0
         )
-        return response.choices[0].message.content.strip().upper()
+        action_raw = response.choices[0].message.content.strip().upper()
+        # Clean potential conversational text
+        for a in ["BLOCK_IGNITION", "ALARM", "VOICE", "BEEP", "NONE"]:
+            if a in action_raw:
+                return a
+        return "NONE"
     except Exception as e:
         print(f"[ERROR] LLM Request failed: {e}")
         return "NONE"
@@ -57,7 +70,7 @@ def main():
             else:
                 action_str = "BEEP" if state.drowsiness_state != "ALERT" else "NONE"
                 
-            if action_str not in ["BEEP", "VOICE", "ALARM", "NONE"]:
+            if action_str not in ["BEEP", "VOICE", "ALARM", "BLOCK_IGNITION", "NONE"]:
                 action_str = "NONE"
                 
             action_obj = Action(action_type=action_str)

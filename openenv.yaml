@@ -17,4 +17,4 @@ agent_interface:
     schema: "{'ear': 'float', 'drowsiness_state': 'str', 'ignore_count': 'int', 'sway_variance': 'float', 'eye_asymmetry': 'float', 'drunk_status': 'str'}"
   action_space:
     type: "string"
-    choices: ["BEEP", "VOICE", "ALARM", "NONE"]
+    choices: ["BEEP", "VOICE", "ALARM", "BLOCK_IGNITION", "NONE"]

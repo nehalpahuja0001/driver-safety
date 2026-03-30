@@ -18,7 +18,9 @@ RUN pip install --no-cache-dir \
     scipy \
     pydantic \
     openai \
-    pyyaml
+    pyyaml \
+    fastapi \
+    uvicorn
 
 # Copy python module code
 COPY *.py ./
@@ -26,4 +28,4 @@ COPY face_landmarker.task ./
 COPY openenv.yaml ./
 
 # Command to execute agent
-CMD ["python", "inference.py"]
+CMD ["uvicorn", "environment:app", "--host", "0.0.0.0", "--port", "7860"]
