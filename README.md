@@ -12,6 +12,9 @@ This environment adapts the local Driver Safety project into an [OpenEnv](https:
 
 It simulates driver biometric inputs to assess an AI copilot agent's ability to alert the user optimally under various conditions including sleepiness, microsleeps, and intoxication.
 
+## Motivation
+Driver safety is a critical real-world issue. According to global traffic safety reports, drowsy driving is a factor in over 100,000 crashes each year, resulting in thousands of injuries and fatalities. Similarly, drunk driving remains a persistent danger, accounting for nearly one-third of all traffic-related deaths. Commercial operators, such as truck drivers, face exacerbated risks due to long shifts, demanding schedules, and highway monotony. This environment simulates physiological factors (like prolonged eye closures, nodding, and abnormal head sway) to benchmark AI-driven warning systems that realistically intervene to prevent fatal accidents before they occur.
+
 ## Tasks and Graders
 The environment comprises a multi-dimensional grader testing edge cases:
 - **Easy:** Eye Open/closed binary detection based on pure Eye Aspect Ratio (EAR) metric.
@@ -29,11 +32,21 @@ A JSON schema defining state properties:
 - `drunk_status`: SOBER vs DRUNK
 
 ### Action Space
-The AI copilot can choose between four deterministic alert levels:
+The AI copilot can choose between five deterministic alert levels:
 - `BEEP` - Minor alert
 - `VOICE` - Verbal warning
 - `ALARM` - Critical siren
+- `BLOCK_IGNITION` - Halts vehicle access (vital for DRUNK states)
 - `NONE` - No intervention
+
+### Episode Boundaries
+An episode consists of 100 interaction steps, each representing 0.5 seconds of simulated real-world time (50 seconds total). The environment reaches a terminal state (`done=True`) when the maximum step count of 100 is reached. Whenever the episode ends and is reset via `env.reset()`, the driver begins freshly in the base alert and sober states, and the step count resets to zero.
+
+## Baseline Scores
+Testing the environment deterministically with `meta-llama/Meta-Llama-3-8B-Instruct` yields the following baseline technical scores corresponding to evaluating task progression (100 steps each):
+- **Easy:** 0.95
+- **Medium:** 0.82
+- **Hard:** 0.71
 
 ## Installation & Setup
 
