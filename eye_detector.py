@@ -98,5 +98,10 @@ def get_face_features(frame):
         else:
             x = math.atan2(-rmat[1,2], rmat[1,1])
         pitch = x * 180.0 / math.pi
+        
+        if pitch > 90:
+            pitch -= 180
+        elif pitch < -90:
+            pitch += 180
 
     return round(ear, 3), pitch, frame
