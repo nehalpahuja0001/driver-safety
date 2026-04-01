@@ -1,11 +1,27 @@
 import cv2
 import time
 import numpy as np
+import threading
+import winsound
+import pyttsx3
+import scipy.io.wavfile as wavfile
+import os
+
 from eye_detector import get_face_features
 from drowsiness import DrowsinessDetector
 from rl_agent import AlertAgent, ACTIONS
-import threading
-import winsound
+
+# GENERATE ALARM WAV
+def generate_alarm_file():
+    if not os.path.exists("alarm.wav"):
+        sample_rate = 44100
+        duration = 1.0 # 1 second loop
+        t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+        wave = np.sin(2 * np.pi * 2500 * t)
+        wave_16bit = np.int16(wave * 32767)
+        wavfile.write("alarm.wav", sample_rate, wave_16bit)
+
+generate_alarm_file()
 
 detector = DrowsinessDetector()
 agent    = AlertAgent()
@@ -15,18 +31,47 @@ alert_time  = None
 drowsy_start_time = None
 ALERT_WAIT  = 5.0
 flash_action = -1
+alarm_active = False
+tts_lock = threading.Lock()
+
+def play_voice_alert():
+    if not tts_lock.acquire(blocking=False):
+        return
+    try:
+        try:
+            import pythoncom
+            pythoncom.CoInitialize()
+        except ImportError:
+            pass
+        engine = pyttsx3.init()
+        engine.say("Warning! Driver drowsy! Please stop the vehicle!")
+        engine.runAndWait()
+    except Exception as e:
+        print(f"TTS Error: {e}")
+    finally:
+        tts_lock.release()
 
 def play_alert(action):
+    global alarm_active
     if action == 0:
-        winsound.Beep(800, 400)
+        # BEEP: Only 2 short beeps
+        winsound.Beep(800, 200)
+        time.sleep(0.1)
+        winsound.Beep(800, 200)
     elif action == 1:
-        for _ in range(5):
-            winsound.Beep(1500, 150)
-            time.sleep(0.05)
+        # VOICE: pyttsx3 saying warning
+        play_voice_alert()
     elif action == 2:
-        for _ in range(15):
-            winsound.Beep(2500, 100)
-            time.sleep(0.05)
+        # ALARM: Loud continuous alarm using winsound
+        if not alarm_active:
+            alarm_active = True
+            winsound.PlaySound("alarm.wav", winsound.SND_FILENAME | winsound.SND_LOOP | winsound.SND_ASYNC)
+
+def stop_continuous_alarm():
+    global alarm_active
+    if alarm_active:
+        winsound.PlaySound(None, winsound.SND_PURGE)
+        alarm_active = False
 
 def flash_screen(action):
     global flash_action
@@ -120,6 +165,7 @@ while True:
             agent.driver_responded()
             drowsy_start_time = None
             alert_time = None
+            stop_continuous_alarm()
 
     cv2.imshow("Driver Safety System", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):

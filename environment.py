@@ -44,6 +44,7 @@ class DriverSafetyEnv:
         
         self.step_count = 0
         self.max_steps = 100
+        self.simulated_time = 0.0
         self.current_state = self._simulate_initial_state()
 
     def _simulate_initial_state(self) -> State:
@@ -63,6 +64,7 @@ class DriverSafetyEnv:
         self.detector = DrowsinessDetector()
         self.agent = AlertAgent()
         self.step_count = 0
+        self.simulated_time = 0.0
         self.current_state = self._simulate_initial_state()
         return self.current_state
 
@@ -103,6 +105,7 @@ class DriverSafetyEnv:
         The OpenEnv main interaction loop.
         """
         self.step_count += 1
+        self.simulated_time += 0.5 # 0.5s per step
         
         # 1. Update RL agent logic based on the driver's response to the new action
         # If the driver was previously drowsy and an action is provided, we award it based on RL rules
@@ -126,7 +129,7 @@ class DriverSafetyEnv:
                     
         # 2. Transition physics
         new_ear = round(self._generate_synthetic_ear(), 3)
-        new_drowsy_state = self.detector.update(new_ear)
+        new_drowsy_state = self.detector.update(new_ear, pitch=0.0, current_time=self.simulated_time)
         sway, asym, drunk_status = self._simulate_drunk_features()
         
         new_state = State(
