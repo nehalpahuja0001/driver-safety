@@ -181,37 +181,5 @@ class DriverSafetyEnv:
                 
             return max(0.0, round(score, 2))
 
-# ==============================================================
-# Web Server for Hugging Face Spaces (Port 7860)
-# ==============================================================
-from fastapi import FastAPI
-import uvicorn
 
-app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"status": "healthy", "message": "Driver Safety OpenEnv is running"}
-
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
-
-# OpenEnv runtime wrapper instance
-server_env = DriverSafetyEnv()
-
-@app.post("/reset")
-def reset_endpoint():
-    return server_env.reset()
-
-@app.post("/step")
-def step_endpoint(action: Action):
-    return server_env.step(action)
-
-@app.get("/state")
-def state_endpoint():
-    return server_env.state()
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=7860)
 

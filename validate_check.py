@@ -70,11 +70,11 @@ if __name__ == "__main__":
     check_file_exists("openenv.yaml")
     check_yaml_fields("openenv.yaml")
     
-    check_file_exists("environment.py")
-    check_env_functions("environment.py")
+    check_file_exists("server/environment.py")
+    check_env_functions("server/environment.py")
     
     check_file_exists("inference.py")
-    check_file_exists("Dockerfile")
+    check_file_exists("server/Dockerfile")
     check_file_exists("README.md")
     
     print("-" * 50)

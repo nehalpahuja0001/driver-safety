@@ -1,6 +1,6 @@
 import time
-from .drowsiness import DrowsinessDetector
-from .rl_agent import AlertAgent, ACTIONS
+from server.drowsiness import DrowsinessDetector
+from server.rl_agent import AlertAgent, ACTIONS
 
 def test_escalation():
     print("--- Testing Drowsiness Escalation ---")
