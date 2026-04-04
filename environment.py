@@ -129,7 +129,7 @@ class DriverSafetyEnv:
                     
         # 2. Transition physics
         new_ear = round(self._generate_synthetic_ear(), 3)
-        new_drowsy_state = self.detector.update(new_ear, pitch=0.0, current_time=self.simulated_time)
+        new_drowsy_state = self.detector.update(new_ear, new_ear, pitch=0.0, current_time=self.simulated_time)
         sway, asym, drunk_status = self._simulate_drunk_features()
         
         new_state = State(
@@ -196,6 +196,21 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+# OpenEnv runtime wrapper instance
+server_env = DriverSafetyEnv()
+
+@app.post("/reset")
+def reset_endpoint():
+    return server_env.reset()
+
+@app.post("/step")
+def step_endpoint(action: Action):
+    return server_env.step(action)
+
+@app.get("/state")
+def state_endpoint():
+    return server_env.state()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=7860)

@@ -60,9 +60,8 @@ def get_face_features(frame):
     lms = result.face_landmarks[0]
     
     # Calculate EAR
-    left  = calculate_ear(lms, LEFT_EYE, w, h)
-    right = calculate_ear(lms, RIGHT_EYE, w, h)
-    ear = (left + right) / 2.0
+    left_ear  = calculate_ear(lms, LEFT_EYE, w, h)
+    right_ear = calculate_ear(lms, RIGHT_EYE, w, h)
     
     # Head Pose Estimation
     nose_tip = (lms[1].x * w, lms[1].y * h)
@@ -89,19 +88,24 @@ def get_face_features(frame):
     )
     
     pitch = 0.0
+    yaw = 0.0
     if success:
         rmat, _ = cv2.Rodrigues(rotation_vector)
         sy = np.sqrt(rmat[0,0] * rmat[0,0] + rmat[1,0] * rmat[1,0])
         singular = sy < 1e-6
         if not singular:
             x = math.atan2(rmat[2,1], rmat[2,2])
+            y = math.atan2(-rmat[2,0], sy)
         else:
             x = math.atan2(-rmat[1,2], rmat[1,1])
+            y = math.atan2(-rmat[2,0], sy)
+            
         pitch = x * 180.0 / math.pi
+        yaw = y * 180.0 / math.pi
         
         if pitch > 90:
             pitch -= 180
         elif pitch < -90:
             pitch += 180
 
-    return round(ear, 3), pitch, frame
+    return round(left_ear, 3), round(right_ear, 3), pitch, yaw, frame

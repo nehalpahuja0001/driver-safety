@@ -69,7 +69,16 @@ def main():
             if hf_token:
                 action_str = get_action_from_llm(client, model_name, state)
             else:
-                action_str = "BEEP" if state.drowsiness_state != "ALERT" else "NONE"
+                action_str = "NONE"
+                if t == 'easy':
+                    if state.drowsiness_state == 'DROWSY': action_str = 'VOICE'
+                elif t == 'medium':
+                    if state.drowsiness_state in ('CRITICAL', 'MICROSLEEP'): action_str = 'ALARM'
+                    elif state.drowsiness_state == 'DROWSY': action_str = 'VOICE'
+                elif t == 'hard':
+                    if state.drunk_status == 'DRUNK': action_str = 'BLOCK_IGNITION'
+                    elif state.drowsiness_state in ('CRITICAL', 'MICROSLEEP'): action_str = 'ALARM'
+                    elif state.drowsiness_state == 'DROWSY': action_str = 'VOICE'
                 
             if action_str not in ["BEEP", "VOICE", "ALARM", "BLOCK_IGNITION", "NONE"]:
                 action_str = "NONE"
