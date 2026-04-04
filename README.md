@@ -15,6 +15,18 @@ It simulates driver biometric inputs to assess an AI copilot agent's ability to 
 ## Motivation
 Driver safety is a critical real-world issue. According to global traffic safety reports, drowsy driving is a factor in over 100,000 crashes each year, resulting in thousands of injuries and fatalities. Similarly, drunk driving remains a persistent danger, accounting for nearly one-third of all traffic-related deaths. Commercial operators, such as truck drivers, face exacerbated risks due to long shifts, demanding schedules, and highway monotony. This environment simulates physiological factors (like prolonged eye closures, nodding, and abnormal head sway) to benchmark AI-driven warning systems that realistically intervene to prevent fatal accidents before they occur.
 
+## Why This Environment is Unique
+
+Unlike existing driver monitoring solutions from Bosch, Continental, or Seeing Machines that use fixed rule-based thresholds, this environment introduces three novel elements:
+
+1. **Reinforcement Learning Adaptive Alerts**: The AI agent learns which alert type (VOICE/ALARM/BLOCK_IGNITION) works best for each driver through Q-learning. If a driver repeatedly ignores VOICE alerts, the system automatically escalates to ALARM — and remembers this preference across sessions via a persistent Q-table.
+
+2. **PERCLOS-based Microsleep Detection**: Uses a 30-second rolling window to calculate the Percentage of Eye Closure (PERCLOS). If >70% of frames show closed eyes, the system detects microsleep within seconds — not minutes like traditional systems.
+
+3. **Multimodal Impairment Detection**: Combines eye asymmetry, blink rate, and head sway variance to detect drunk/impaired driving using only a standard camera — no specialized hardware needed.
+
+**Problem Statement**: How can an AI agent learn to optimally intervene when a driver shows signs of drowsiness or impairment, adapting its strategy based on individual driver behavior?
+
 ## Tasks and Graders
 The environment comprises a multi-dimensional grader testing edge cases:
 - **Easy:** Eye Open/closed binary detection based on pure Eye Aspect Ratio (EAR) metric.
