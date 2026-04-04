@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.backends.legacy:BuildBackend"
+
+[project]
+name = "driver-safety-env"
+version = "0.1.0"
+description = "Driver Safety OpenEnv Environment"
+requires-python = ">=3.9"
+dependencies = [
+    "openai",
+    "pydantic",
+    "pyyaml",
+    "numpy",
+    "scipy",
+    "fastapi",
+    "uvicorn"
+]
