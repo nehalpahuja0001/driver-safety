@@ -45,14 +45,11 @@ def get_action_from_llm(client: OpenAI, model_name: str, state: State) -> str:
         return "NONE"
 
 def main():
-    api_base_url = os.getenv("API_BASE_URL", "https://api-inference.huggingface.co/v1")
+    API_BASE_URL = os.getenv("API_BASE_URL", "https://api-inference.huggingface.co/v1")
     model_name = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3-8B-Instruct")
-    hf_token = os.getenv("HF_TOKEN")
+    HF_TOKEN = os.getenv("HF_TOKEN")
 
-    client = OpenAI(
-        base_url=api_base_url,
-        api_key=hf_token or "dummy-token"
-    )
+    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
     
     print("START")
     tasks = ['easy', 'medium', 'hard']
@@ -60,8 +57,8 @@ def main():
         env = DriverSafetyEnv(task_level=t)
         state = env.reset()
         
-        for step in range(100): # Demo 100 steps per task
-            if hf_token:
+        for step_num in range(100): # Demo 100 steps per task
+            if HF_TOKEN:
                 action_str = get_action_from_llm(client, model_name, state)
             else:
                 action_str = "NONE"
@@ -81,7 +78,7 @@ def main():
             action_obj = Action(action_type=action_str)
             result = env.step(action_obj)
             
-            print(f"STEP {step+1}")
+            print(f"STEP {step_num}")
             
             state = result.state
             if result.done:
