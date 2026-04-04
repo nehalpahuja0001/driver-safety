@@ -42,26 +42,21 @@ def get_action_from_llm(client: OpenAI, model_name: str, state: State) -> str:
                 return a
         return "NONE"
     except Exception as e:
-        print(f"[ERROR] LLM Request failed: {e}")
         return "NONE"
 
 def main():
     api_base_url = os.getenv("API_BASE_URL", "https://api-inference.huggingface.co/v1")
     model_name = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3-8B-Instruct")
     hf_token = os.getenv("HF_TOKEN")
-    
-    if not hf_token:
-        print("Please set the HF_TOKEN environment variable (e.g. export HF_TOKEN='your_token').")
-        print("Falling back to local simulation without LLM calls if token is missing.")
 
     client = OpenAI(
         base_url=api_base_url,
         api_key=hf_token or "dummy-token"
     )
     
+    print("START")
     tasks = ['easy', 'medium', 'hard']
     for t in tasks:
-        print(f"\n--- Running Task: {t.upper()} ---")
         env = DriverSafetyEnv(task_level=t)
         state = env.reset()
         
@@ -86,13 +81,12 @@ def main():
             action_obj = Action(action_type=action_str)
             result = env.step(action_obj)
             
-            print(f"Step {step+1:02d} | State: {result.state.drowsiness_state}({result.state.ear:.2f}) | "
-                  f"Drunk: {result.state.drunk_status} | Action: {action_str:5s} | "
-                  f"Reward: {result.reward:5.1f} | TechScore: {result.info['score']}")
+            print(f"STEP {step+1}")
             
             state = result.state
             if result.done:
                 break
+    print("END")
 
 if __name__ == "__main__":
     main()
