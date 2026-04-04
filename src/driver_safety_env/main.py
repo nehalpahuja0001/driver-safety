@@ -8,9 +8,9 @@ import scipy.io.wavfile as wavfile
 import os
 from datetime import datetime
 
-from eye_detector import get_face_features
-from drowsiness import DrowsinessDetector
-from rl_agent import AlertAgent, ACTIONS
+from .eye_detector import get_face_features
+from .drowsiness import DrowsinessDetector
+from .rl_agent import AlertAgent, ACTIONS
 
 def generate_alarm_file():
     if not os.path.exists("alarm.wav"):

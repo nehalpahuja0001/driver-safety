@@ -1,6 +1,6 @@
 import os
 from openai import OpenAI
-from environment import DriverSafetyEnv, Action, State
+from .environment import DriverSafetyEnv, Action, State
 
 def get_action_from_llm(client: OpenAI, model_name: str, state: State) -> str:
     # Hardcoded safety intercept for DRUNK status without needing LLM reasoning

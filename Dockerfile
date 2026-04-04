@@ -22,10 +22,10 @@ RUN pip install --no-cache-dir \
     fastapi \
     uvicorn
 
-# Copy python module code
-COPY *.py ./
+# Copy package structure
+COPY src ./src
 COPY face_landmarker.task ./
 COPY openenv.yaml ./
 
 # Command to execute agent
-CMD ["uvicorn", "environment:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "src.driver_safety_env.environment:app", "--host", "0.0.0.0", "--port", "7860"]

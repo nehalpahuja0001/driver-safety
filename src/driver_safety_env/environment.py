@@ -4,8 +4,8 @@ from typing import Dict, Any, Tuple
 from pydantic import BaseModel, Field
 
 # Import local modules from driver-safety project
-from drowsiness import DrowsinessDetector
-from rl_agent import AlertAgent, ACTIONS
+from .drowsiness import DrowsinessDetector
+from .rl_agent import AlertAgent, ACTIONS
 
 # ==============================================================
 # OpenEnv Pydantic Spec
