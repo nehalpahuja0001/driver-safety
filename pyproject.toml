@@ -7,6 +7,16 @@ name = "driver-safety-env"
 version = "0.1.0"
 description = "Driver Safety OpenEnv Environment"
 requires-python = ">=3.9"
+dependencies = [
+    "openenv",
+    "openai",
+    "pydantic",
+    "pyyaml",
+    "numpy",
+    "scipy",
+    "fastapi",
+    "uvicorn"
+]
 
 [tool.openenv]
 name = "driver-safety-env"
