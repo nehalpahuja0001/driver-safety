@@ -20,12 +20,14 @@ RUN pip install --no-cache-dir \
     openai \
     pyyaml \
     fastapi \
-    uvicorn
+    uvicorn \
+    websockets
 
-# Copy package structure
-COPY src ./src
-COPY face_landmarker.task ./
-COPY openenv.yaml ./
+# Copy everything from repository root
+COPY . ./
 
-# Command to execute agent
-CMD ["uvicorn", "src.driver_safety_env.environment:app", "--host", "0.0.0.0", "--port", "7860"]
+# Expose port
+EXPOSE 7860
+
+# Command to execute FastAPI server containing the WebSocket endpoints
+CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "7860"]
